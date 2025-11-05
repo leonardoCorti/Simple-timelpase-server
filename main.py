@@ -71,13 +71,11 @@ def end():
     global save_path
     # creazione timelpase
     print(
-        f"ffmpeg -f image2pipe -framerate 24 -i {save_path}/%04d.jpg -c:v libx264 -pix_fmt yuv420p output.mp4 && rm {save_path}/*.jpg"
+        f"ffmpeg -framerate 24 -i {save_path}/%04d.jpg -c:v libx264 -pix_fmt yuv420p output.mp4 && rm {save_path}/*.jpg"
     )
     subprocess.Popen(
         [
             "ffmpeg",
-            "-f",
-            "image2pipe",
             "-framerate",
             f"{FPS}",
             "-i",
