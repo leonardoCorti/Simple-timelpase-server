@@ -1,7 +1,11 @@
 [project]
 name = "timelapse-simple-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "simple timelapse server for 3d printer"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["fastapi>=0.121.0", "uvicorn>=0.38.0"]
+dependencies = [
+    "datetime>=5.5",
+    "fastapi>=0.121.0",
+    "uvicorn>=0.38.0",
+]
