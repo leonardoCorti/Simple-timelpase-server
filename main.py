@@ -10,6 +10,7 @@ app = FastAPI(
 # Global state variable
 is_running = False
 save_path = ""
+FPS = 24
 
 
 @app.post("/start")
