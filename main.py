@@ -2,6 +2,9 @@ from fastapi import FastAPI
 import uvicorn
 from datetime import datetime
 import subprocess
+import os
+import shutil
+from pathlib import Path
 
 app = FastAPI(
     title="simple timelapse server",
@@ -14,6 +17,7 @@ is_running = False
 save_path = "~/timelapse"
 frame = 0
 FPS = 24
+photo_dir = Path.home() / "storage" / "shared" / "DCIM" / "timelapse"
 
 
 @app.post("/start")
@@ -45,14 +49,26 @@ def photo():
     if is_running:
         frame += 1
         print(f"photo number {frame}")
-        print("termux-torch on")
-        subprocess.Popen(["termux-torch", "on"])
-        print(f"termux-camera-photo -c 0 {save_path}/{frame:04d}.jpg")
         subprocess.Popen(
-            ["termux-camera-photo", "-c", "0", f"{save_path}/{frame:04d}.jpg"]
+            [
+                "am",
+                "broadcast",
+                "-anet.dinglisch.android.tasker.ACTION_TASK",
+                "--es",
+                "task_name",
+                '"Take_photo"',
+            ]
         )
-        print("termux-torch off")
-        subprocess.Popen(["termux-torch", "off"])
+        jpgs = list(photo_dir.glob("*.jpg"))
+        latest = max(jpgs, key=os.path.getmtime)
+        shutil.copy2(latest, f"{save_path}/{frame:04d}.jpg")
+        # subprocess.Popen(["termux-torch", "on"])
+        # print(f"termux-camera-photo -c 0 {save_path}/{frame:04d}.jpg")
+        # subprocess.Popen(
+        #     ["termux-camera-photo", "-c", "0", f"{save_path}/{frame:04d}.jpg"]
+        # )
+        # print("termux-torch off")
+        # subprocess.Popen(["termux-torch", "off"])
     return {}
 
 
