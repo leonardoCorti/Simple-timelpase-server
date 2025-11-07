@@ -5,6 +5,7 @@ import subprocess
 import os
 import shutil
 from pathlib import Path
+import time
 
 app = FastAPI(
     title="simple timelapse server",
@@ -14,7 +15,7 @@ app = FastAPI(
 
 # Global state variable
 is_running = False
-save_path = "~/timelapse"
+save_path = "/data/data/com.termux/files/home/timelapse"
 frame = 0
 FPS = 24
 photo_dir = Path.home() / "storage" / "shared" / "DCIM" / "timelapse"
@@ -53,12 +54,14 @@ def photo():
             [
                 "am",
                 "broadcast",
-                "-anet.dinglisch.android.tasker.ACTION_TASK",
+                "-a",
+                "net.dinglisch.android.tasker.ACTION_TASK",
                 "--es",
                 "task_name",
-                '"Take_photo"',
+                "Take_photo",
             ]
         )
+        time.sleep(10)
         jpgs = list(photo_dir.glob("*.jpg"))
         latest = max(jpgs, key=os.path.getmtime)
         shutil.copy2(latest, f"{save_path}/{frame:04d}.jpg")
@@ -89,13 +92,13 @@ def end():
     print(
         f"ffmpeg -framerate 24 -i {save_path}/%04d.jpg -c:v libx264 -pix_fmt yuv420p output.mp4 && rm {save_path}/*.jpg"
     )
-    subprocess.Popen(
+    subprocess.run(
         [
             "ffmpeg",
             "-framerate",
             f"{FPS}",
             "-i",
-            "{save_path}/%04d.jpg",
+            f"{save_path}/%04d.jpg",
             "-c:v",
             "libx264",
             "-pix_fmt",
@@ -103,6 +106,7 @@ def end():
             f"{save_path}.mp4",
         ]
     )
+    # shutil.rmtree(save_path)
     save_path = "~/timelapse"
     return {}
 
