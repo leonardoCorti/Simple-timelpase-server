@@ -81,11 +81,11 @@ def end():
     if not is_running:
         print("Erorr was not running")
         return {}
+    is_running = False
     global frame
     if frame == 0:
         print("no photo")
         return {}
-    is_running = False
     print("ending")
     global save_path
     # creazione timelpase
@@ -107,7 +107,7 @@ def end():
         ]
     )
     # shutil.rmtree(save_path)
-    save_path = "~/timelapse"
+    save_path = "/data/data/com.termux/files/home/timelapse"
     return {}
 
 
